@@ -17,3 +17,6 @@ class APIService:
             return response.status_code == 200
         except requests.RequestException:
             return False
+
+    def close(self):
+        self._session.close()

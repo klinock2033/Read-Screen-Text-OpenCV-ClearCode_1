@@ -5,6 +5,7 @@ from core.use_cases import ReadAndSendTextUseCase
 from core.runner import AppRunner
 from core.logger import setup_logger
 from core.config import AppConfig
+from core.signal_handler import SignalHandler
 
 
 class App:
@@ -24,7 +25,12 @@ class App:
         self.logger.info('Config interval: %s', config.interval)
         self.logger.info('Config base url: %s', config.api_base_url)
         self.runner = AppRunner(self.read_and_send_text_use_case, config.interval)
+        self.signal_handler = SignalHandler(self.shutdown)
+        self.signal_handler.register()
 
+    def shutdown(self):
+        self.runner.stop()
+        self.api.close()
     def run(self):
         self.logger.info('Starting app')
 

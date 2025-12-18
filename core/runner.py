@@ -25,4 +25,5 @@ class AppRunner:
             time.sleep(self.interval)
 
     def stop(self):
+        self.logger.info("Runner stopping")
         self._running = False
