@@ -6,7 +6,7 @@ from core.runner import AppRunner
 from core.logger import setup_logger
 from core.config import AppConfig
 from core.signal_handler import SignalHandler
-
+from core.storage import TextStorage
 
 class App:
     def __init__(self):
@@ -16,10 +16,12 @@ class App:
         self.text_service = TextService()
         self.api = APIService(config.api_base_url)
         self.logger = setup_logger()
+        self.storage = TextStorage(config.storage_path)
         self.read_and_send_text_use_case = ReadAndSendTextUseCase(
             self.ocr_service,
             self.text_service,
-            self.api
+            self.api,
+            self.storage
         )
         self.logger.info('App wil start with config:')
         self.logger.info('Config interval: %s', config.interval)
