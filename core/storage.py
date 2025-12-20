@@ -7,6 +7,13 @@ class TextStorage:
         self.path = Path(file_path)
         self.path.parent.mkdir(parents=True, exist_ok=True)
 
+    def load_all(self):
+        items = []
+        with open(self.path, 'r', encoding="utf-8") as f:
+            for line in f:
+                items.append(ProcessedText.from_text(line))
+        return items
+
     def save(self, text: ProcessedText):
         with self.path.open('a', encoding='utf-8') as f:
             f.write(json.dumps({
