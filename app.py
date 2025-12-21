@@ -33,7 +33,7 @@ class App:
     def shutdown(self):
         self.runner.stop()
         self.api.close()
+
     def run(self):
         self.logger.info('Starting app')
-
         self.runner.start()

@@ -6,7 +6,6 @@ from core.models import ProcessedText
 from core.config import AppConfig
 from core.use_cases import ReadAndSendTextUseCase
 from services.ocr_service import OCRService
-from services.ocr_stub import OCRStub
 from services.text_service import TextService
 from services.api_service import APIService
 temp_path = None
@@ -17,7 +16,6 @@ def create_storage():
 
     return TextStorage(temp_path.name)
 
-
 def test_save_new_text():
     storage = create_storage()
     text = ProcessedText.from_text("Hello, world!")
@@ -27,27 +25,26 @@ def test_save_new_text():
     assert storage.exists(text)
 
 def test_duplicate_text_not_saved_twice():
-    dublicate_text = 0
+    duplicate_text = 0
     config = AppConfig.from_env()
     storage = create_storage()
-    ocr_service = OCRStub()
+    ocr_service = OCRService()
     text_service = TextService()
     api = APIService(config.api_base_url)
-    usecase = ReadAndSendTextUseCase(ocr_service, text_service, api, storage)
+    use_case = ReadAndSendTextUseCase(ocr_service, text_service, api, storage)
 
-    usecase.execute()
-    usecase.execute()
+    use_case.execute()
+    use_case.execute()
 
     all_items = storage.load_all()
-    ocr_text = ocr_service.read_text()
-
     for item in all_items:
         data = json.loads(item.content)
-        if data["content"] == ocr_text:
-            dublicate_text += 1
+        for i in all_items:
+            data2 = json.loads(i.content)
+            if data["content"] == data2["content"]:
+                duplicate_text += 1
 
-    assert isinstance(ocr_text, str), f"Expected OCR text to be string, got {type(ocr_text)}"
-    assert dublicate_text == 1, f"Expected 1 duplicate, got {dublicate_text}"
+    assert duplicate_text == 1, f"Expected 1 duplicate, got {duplicate_text}"
 
 
 def test_presistence_after_restart():

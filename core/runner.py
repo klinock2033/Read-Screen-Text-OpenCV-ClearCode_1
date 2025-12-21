@@ -11,6 +11,7 @@ class AppRunner:
         self.use_case = use_case
         self.interval = interval
         self._running = False
+        self._manual_capture_screen = False
         self.logger = setup_logger()
 
     def start(self):
@@ -23,6 +24,7 @@ class AppRunner:
             except Exception as e:
                 self.logger.exception('runner error: %s', e)
             time.sleep(self.interval)
+
 
     def stop(self):
         self.logger.info("Runner stopping")

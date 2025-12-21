@@ -24,6 +24,7 @@ class ReadAndSendTextUseCase:
 
     def execute(self):
         img = self.image_grab_service.grab_screen(self.img_config.monitor_config)
+        self.logger.info("Grabbed screenshot")
         if img is None:
             self.logger.error("Failed to grab screen")
             return False
