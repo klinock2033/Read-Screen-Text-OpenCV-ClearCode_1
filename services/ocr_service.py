@@ -1,14 +1,13 @@
 from PIL import Image
 import pytesseract
 
-
 class OCRService:
-    def __init__(self, languages: str = 'eng'):
-        self.languages = languages
+    # def __init__(self):
 
-    def extract_text(self, image: Image.Image) -> str:
+
+    def extract_text(self, image: Image.Image, lang: str) -> str:
         """Extract text from an image use OCR service"""
-        return pytesseract.image_to_string(image, lang =self.languages)
+        return pytesseract.image_to_string(image, lang =lang)
 
     def read_text(self) -> str | None:
         """Read text from an image use OCR service"""

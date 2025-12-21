@@ -1,4 +1,4 @@
-from services.ocr_stub import OCRStub
+from services.ocr_service import OCRService
 from services.text_service import TextService
 from services.api_service import APIService
 from core.use_cases import ReadAndSendTextUseCase
@@ -11,8 +11,8 @@ from core.storage import TextStorage
 class App:
     def __init__(self):
         config = AppConfig.from_env()
-        # self.ocr_service = OCRService(languages='eng+rus')
-        self.ocr_service = OCRStub()
+        self.ocr_service = OCRService()
+        # self.ocr_service = OCRStub()
         self.text_service = TextService()
         self.api = APIService(config.api_base_url)
         self.logger = setup_logger()
