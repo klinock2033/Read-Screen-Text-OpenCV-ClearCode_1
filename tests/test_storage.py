@@ -1,57 +1,43 @@
-import tempfile
-import json
 from pathlib import Path
 from core.storage import TextStorage
 from core.models import ProcessedText
-from core.config import AppConfig
-from core.use_cases import ReadAndSendTextUseCase
-from services.ocr_service import OCRService
-from services.text_service import TextService
-from services.api_service import APIService
-temp_path = None
-def create_storage():
-    global temp_path
-    if temp_path is None:
-        temp_path = Path(tempfile.mkstemp(suffix=".json")[1])
 
-    return TextStorage(temp_path.name)
+
+
+def create_storage(name: str):
+    path = Path(name)
+    if path.exists(): path.unlink()
+    Path(path).parent.mkdir(parents=True, exist_ok=True)
+    return TextStorage(name)
+
 
 def test_save_new_text():
-    storage = create_storage()
-    text = ProcessedText.from_text("Hello, world!")
+    storage = create_storage("test_new_text.json")
+    text = ProcessedText.from_text("Test save new text")
 
-    assert not storage.exists(text)
+    assert not storage.exists(text.content)
     storage.save(text)
-    assert storage.exists(text)
+    assert storage.exists(text.content)
+    if storage.path.exists(): storage.path.unlink()
 
-def test_duplicate_text_not_saved_twice():
-    duplicate_text = 0
-    config = AppConfig.from_env()
-    storage = create_storage()
-    ocr_service = OCRService()
-    text_service = TextService()
-    api = APIService(config.api_base_url)
-    use_case = ReadAndSendTextUseCase(ocr_service, text_service, api, storage)
 
-    use_case.execute()
-    use_case.execute()
-
+def test_duplicate_not_saved_twice():
+    storage = create_storage("test_duplicate_text.json")
+    test_text = ProcessedText.from_text("Test duplicate history save")
+    storage.save(test_text)
+    storage.save(test_text)
     all_items = storage.load_all()
-    for item in all_items:
-        data = json.loads(item.content)
-        for i in all_items:
-            data2 = json.loads(i.content)
-            if data["content"] == data2["content"]:
-                duplicate_text += 1
 
-    assert duplicate_text == 1, f"Expected 1 duplicate, got {duplicate_text}"
+    assert len(all_items) == 1
+    if storage.path.exists(): storage.path.unlink()
 
 
 def test_presistence_after_restart():
-    storage = create_storage()
+    storage = create_storage("test_presistence_after_restart.json")
     text = ProcessedText.from_text("persistent text")
 
     storage.save(text)
 
     storage2 = TextStorage(storage.path)
-    assert storage2.exists(text)
+    assert storage2.exists(text.content)
+    if storage.path.exists(): storage.path.unlink()

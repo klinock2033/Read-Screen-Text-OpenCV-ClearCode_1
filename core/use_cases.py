@@ -44,7 +44,7 @@ class ReadAndSendTextUseCase:
             self.logger.warning("Can't process text")
             return False
 
-        if self.storage.exists(processed):
+        if self.storage.exists(processed.content):
             self.logger.warning("Can't save processed text")
             return False
 
