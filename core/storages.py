@@ -1,9 +1,12 @@
+#sorages.py
+
 import json
 from pathlib import Path
 from core.models import ProcessedText
+from core.storage.base import TextStorageBase
 
 
-class TextStorage:
+class TextStorage(TextStorageBase):
     def __init__(self, file_path: str):
         self.path = Path(file_path)
         self._items = []
@@ -11,8 +14,6 @@ class TextStorage:
         self._load_from_disk()
 
     def _load_from_disk(self) -> None:
-        if self._items:
-            return
 
         if not self.path.exists():
             return
@@ -39,11 +40,14 @@ class TextStorage:
 
         self.path.parent.mkdir(parents=True, exist_ok=True)
         with open(self.path, 'a', encoding="utf-8") as f:
-            json.dump(text.to_dict(), f)
-            f.write("\n")
+            f.write(json.dumps(text.to_dict()) + '\n')
 
     def exists(self, content: str) -> bool:
         return content in self._content_set
 
     def load_all(self) -> list[ProcessedText]:
         return list(self._items)
+
+    def close(self) -> None:
+        pass
+

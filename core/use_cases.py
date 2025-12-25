@@ -1,7 +1,7 @@
 from services.ocr_service import OCRService
 from services.text_service import TextService
 from services.api_service import APIService
-from core.storage import TextStorage
+from core.storages import TextStorage
 from core.logger import setup_logger
 from services.image_grab_service import ImageGrabService
 from core.config import ScreenshotConfig, OCRConfig

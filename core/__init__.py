@@ -1,1 +1,1 @@
-from .storage import TextStorage
+from .storages import TextStorage

@@ -1,5 +1,5 @@
 from pathlib import Path
-from core.storage import TextStorage
+from core.storages import TextStorage
 from core.models import ProcessedText
 
 
