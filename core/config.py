@@ -1,5 +1,7 @@
+#App configs
+
 from dataclasses import dataclass
-import os
+import os, json
 
 @dataclass(frozen=True)
 class AppConfig:
@@ -7,6 +9,8 @@ class AppConfig:
     interval: float
     storage_path: str
     screen_save_path: str
+    storage_type: str
+    sqlite_path: str
 
     @classmethod
     def from_env(cls) -> "AppConfig":
@@ -14,7 +18,9 @@ class AppConfig:
             api_base_url=os.getenv("API_BASE_URL", "http://localhost:5000"),
             interval=float(os.getenv("APP_INTERVAL", "2.0")),
             storage_path=os.getenv("STORAGE_PATH", "data/history.json"),
-            screen_save_path=os.getenv("SCREEN_PATH", "../data/image.png")
+            screen_save_path=os.getenv("SCREEN_PATH", "../data/image.png"),
+            sqlite_path=os.getenv("SQLITE_PATH", "data/texts.db"),
+            storage_type=os.getenv("STORAGE_TYPE", "sqlite"),
         )
 @dataclass(frozen=False)
 class OCRConfig:
@@ -30,9 +36,10 @@ class ScreenshotConfig:
     monitor_config: dict
     @classmethod
     def from_env(cls) -> "ScreenshotConfig":
-        return cls(
-            monitor_config= os.getenv("MONITOR_CONFIG", {"top": 720, "left": 180, "width": 830, "height": 400}),
-        )
+        raw = os.getenv( "MONITOR_CONFIG", '{"top": 720, "left": 180, "width": 830, "height": 400}' )
+        monitor_config = json.loads(raw)
+        return cls(monitor_config = monitor_config)
+
 
 @dataclass(frozen=False)
 class KeyBindingConfig:

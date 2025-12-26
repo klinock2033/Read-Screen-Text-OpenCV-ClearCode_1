@@ -1,7 +1,7 @@
 from services.ocr_service import OCRService
 from services.text_service import TextService
 from services.api_service import APIService
-from core.storages import TextStorage
+from core.storage.base import TextStorageBase
 from core.logger import setup_logger
 from services.image_grab_service import ImageGrabService
 from core.config import ScreenshotConfig, OCRConfig
@@ -11,7 +11,7 @@ class ReadAndSendTextUseCase:
                  ocr: OCRService,
                  text_service: TextService,
                  api: APIService,
-                 storage: TextStorage,
+                 storage: TextStorageBase,
     ):
         self.ocr = ocr
         self.text_service = text_service
@@ -49,6 +49,8 @@ class ReadAndSendTextUseCase:
             return False
 
         success: bool = self.api.send_text(processed)
+        if success:
+            self.logger.info("[][][]--> Text sent to Flask service")
 
         if success:
             self.logger.warning("Text successfully saved into storage")

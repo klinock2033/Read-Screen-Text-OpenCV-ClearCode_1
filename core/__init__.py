@@ -1,1 +1,1 @@
-from .storages import TextStorage
+from core.storage.json_storages import TextStorage

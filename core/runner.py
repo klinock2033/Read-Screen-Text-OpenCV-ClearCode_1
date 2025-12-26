@@ -1,5 +1,5 @@
 import time
-from core.use_cases import ReadAndSendTextUseCase
+from core.use_cases.read_and_send_text import ReadAndSendTextUseCase
 from core.logger import setup_logger
 
 

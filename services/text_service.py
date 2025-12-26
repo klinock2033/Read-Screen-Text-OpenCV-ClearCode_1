@@ -1,6 +1,5 @@
 import re
 from difflib import SequenceMatcher
-from typing import Optional
 from core.models import ProcessedText
 from core.logger import setup_logger
 
