@@ -1,5 +1,4 @@
 #App configs
-
 from dataclasses import dataclass
 import os, json
 
@@ -11,6 +10,7 @@ class AppConfig:
     screen_save_path: str
     storage_type: str
     sqlite_path: str
+    filter_path: str
 
     @classmethod
     def from_env(cls) -> "AppConfig":
@@ -20,6 +20,7 @@ class AppConfig:
             storage_path=os.getenv("STORAGE_PATH", "data/history.json"),
             screen_save_path=os.getenv("SCREEN_PATH", "../data/image.png"),
             sqlite_path=os.getenv("SQLITE_PATH", "data/texts.db"),
+            filter_path=os.getenv("FILTER_PATH", "data/filter.json"),
             storage_type=os.getenv("STORAGE_TYPE", "sqlite"),
         )
 @dataclass(frozen=False)
@@ -33,12 +34,16 @@ class OCRConfig:
 
 @dataclass(frozen=False)
 class ScreenshotConfig:
+    use_filter: bool
     monitor_config: dict
     @classmethod
     def from_env(cls) -> "ScreenshotConfig":
         raw = os.getenv( "MONITOR_CONFIG", '{"top": 720, "left": 180, "width": 830, "height": 400}' )
         monitor_config = json.loads(raw)
-        return cls(monitor_config = monitor_config)
+        return cls(
+            monitor_config = monitor_config,
+            use_filter = os.getenv("USE_FILTER", "false").lower() == "true"
+        )
 
 
 @dataclass(frozen=False)

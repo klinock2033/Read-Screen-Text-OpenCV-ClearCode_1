@@ -7,6 +7,7 @@ from services.ocr_service import OCRService
 from services.text_service import TextService
 from services.api_service import APIService
 
+
 def create_app():
     config = AppConfig.from_env()
     ocr_config = OCRConfig.from_env()

@@ -7,9 +7,9 @@ class OCRService:
         self.config = config
 
 
-    def extract_text(self, image: Image.Image) -> str:
+    def extract_text(self, image: Image.Image, language: str) -> str:
         """Extract text from an image use OCR service"""
-        return pytesseract.image_to_string(image, lang =self.config.ocr_language)
+        return pytesseract.image_to_string(image, lang =language)
 
     def read_text(self) -> str | None:
         """Read text from an image use OCR service"""

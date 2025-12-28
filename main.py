@@ -3,6 +3,8 @@ from app.bootstrap import create_app
 from core.logger import setup_logger
 
 
+shutdown_requested = False
+
 def main():
     logger = setup_logger()
     use_cases, storage, config = create_app()

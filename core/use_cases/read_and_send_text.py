@@ -4,7 +4,8 @@ from services.api_service import APIService
 from core.storage.base import TextStorageBase
 from core.logger import setup_logger
 from services.image_grab_service import ImageGrabService
-from core.config import ScreenshotConfig, OCRConfig
+from core.config import ScreenshotConfig, OCRConfig, AppConfig
+from core.storage.filter_storage import FilterStorage
 
 class ReadAndSendTextUseCase:
     def __init__(self,
@@ -13,6 +14,7 @@ class ReadAndSendTextUseCase:
                  api: APIService,
                  storage: TextStorageBase,
     ):
+
         self.ocr = ocr
         self.text_service = text_service
         self.api = api
@@ -21,6 +23,13 @@ class ReadAndSendTextUseCase:
         self.image_grab_service = ImageGrabService()
         self.img_config = ScreenshotConfig.from_env()
         self.ocr_config = OCRConfig.from_env()
+        self.app_config = AppConfig.from_env()
+
+        self.filter_storage = FilterStorage(self.app_config.filter_path)
+        self._use_filter: bool = self.img_config.use_filter
+        self._filters_list: list = self.filter_storage.load_filter_file()
+        self.logger.warning(f"Loading filter file<><><><> {self._filters_list}")
+
 
     def execute(self):
         img = self.image_grab_service.grab_screen(self.img_config.monitor_config)
@@ -28,8 +37,8 @@ class ReadAndSendTextUseCase:
         if img is None:
             self.logger.error("Failed to grab screen")
             return False
-
-        img = self.image_grab_service.filter_image(img)
+        if self._use_filter:
+            img = self.image_grab_service.apply_image_filter(img, self._filters_list)
         if img is None:
             self.logger.error("Failed to filter image")
             return False
