@@ -1,4 +1,4 @@
-#factory.py
+#grabber_factory.py
 
 from core.storage.base import TextStorageBase
 from core.storage.json_storages import TextStorage

@@ -15,6 +15,7 @@ class ProcessedText:
             timestamp=time.time(),
             length=len(text)
         )
+
     def to_json(self) -> str:
         return json.dumps({
             "content": self.content,
