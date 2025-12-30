@@ -1,4 +1,4 @@
-from filters.filter_registry import FILTER_REGISTRY
+from filters.filter_registry_pil import FILTER_REGISTRY
 
 
 class ImageGrabService:

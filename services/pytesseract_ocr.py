@@ -1,6 +1,8 @@
 import pytesseract
+from PIL import Image, ImageEnhance
 
 class PytesseractService:
+    backend = "PIL"
     def __init__(self):
         self.pytesseract = pytesseract
 

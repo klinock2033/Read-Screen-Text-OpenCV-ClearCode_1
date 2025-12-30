@@ -1,4 +1,4 @@
-#core/use_cases/read_and_send_text.py
+# core/use_cases/read_and_send_text.py
 
 class ReadAndSendTextUseCase:
     def __init__(self,
@@ -8,11 +8,13 @@ class ReadAndSendTextUseCase:
                  storage,
                  logger,
                  image_grab_service,
-                 image_processing,
+                 filter_object,
+                 image_converter,
 
+                 grabber_image_format,
                  screen_config,
-                 filter_list,
-    ):
+                 ocr_image_format
+                 ):
 
         self.ocr = ocr
         self.text_service = text_service
@@ -21,22 +23,35 @@ class ReadAndSendTextUseCase:
         self.logger = logger
         self.image_grab_service = image_grab_service
         self.screenshot_config = screen_config
-        self.filter_list = filter_list
-        self.image_processing = image_processing
-
+        self.filter_object = filter_object
+        self.image_converter = image_converter
+        self.grabber_image_format = grabber_image_format
+        self.ocr_image_format = ocr_image_format
 
     def execute(self):
+        image_format = self.grabber_image_format
         self.logger.info("Grabbed screenshot")
         img = self.image_grab_service.grab_screen()
 
         if img is None:
             self.logger.error("Failed to grab screen")
             return False
-        img = self.image_processing.convert_image(img)
+        if bool(self.screenshot_config.use_filter) & bool(self.filter_object):
+            self.logger.info("Try to use filter")
+            for obj in self.filter_object:
+                if obj.backend != image_format:
+                    self.logger.info(f"Filter library image format: {obj.backend} incompatible to: {image_format}")
+                    img = self.image_converter.convert_image(img=img,
+                                                             current_format=self.grabber_image_format,
+                                                             target_format=obj.backend)
+                    image_format = obj.backend
+                    img = obj.apply_image_filter(img)
 
-        if self.screenshot_config.use_filter:
-            img = self.image_processing.apply_image_filter(img, self.filter_list)
-
+        if image_format != self.ocr_image_format:
+            self.logger.info(f"OCR library image format: {self.ocr_image_format} incompatible to: {image_format}")
+            img = self.image_converter.convert_image(img=img,
+                                                     current_format=image_format,
+                                                     target_format=self.ocr_image_format)
         if img is None:
             self.logger.error("Failed to filter image")
             return False

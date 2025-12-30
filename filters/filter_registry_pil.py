@@ -1,5 +1,29 @@
 from PIL import ImageEnhance, ImageFilter
 
+
+class FilterPil:
+    backend = "PIL"
+    def __init__(self, filter_list: list[dict], logger):
+        self.filter_list = filter_list
+        self.filter_registry = FILTER_REGISTRY
+        self.logger = logger
+
+    def apply_image_filter(self, img):
+        self.logger.info("Applying image filter")
+
+        for f in self.filter_list:
+            f_type = f.get("type")
+
+            if f_type not in self.filter_registry:
+                self.logger.error("Unknown filter type: {}".format(f_type))
+                continue
+
+            try:
+                img = self.filter_registry[f_type](img, **f)
+            except Exception as e:
+                self.logger.error(f"Error applying filter: {e}")
+        return img
+
 def apply_grayscale(img, **kwargs):
     return img.convert("L")
 

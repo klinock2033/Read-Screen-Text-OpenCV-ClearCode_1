@@ -54,6 +54,7 @@ class OCRConfig:
 @dataclass(frozen=False)
 class ScreenshotConfig:
     use_filter: bool
+    filter_lib: str
     monitor_config: dict
     monitor_config_name: dict
     @classmethod
@@ -65,7 +66,8 @@ class ScreenshotConfig:
         return cls(
             monitor_config = monitor_config,
             monitor_config_name = monitor_config_name,
-            use_filter = os.getenv("USE_FILTER", "false").lower() == "true"
+            use_filter = os.getenv("USE_FILTER", "false").lower() == "true",
+            filter_lib = os.getenv("FILTER_LIB", "PIL"),
         )
 
 
